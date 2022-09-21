@@ -39,9 +39,8 @@ assert_eq!(w.end_document(),
 
 #![doc(html_root_url = "https://docs.rs/xmlwriter/0.1.0")]
 
-#![forbid(unsafe_code)]
-#![warn(missing_docs)]
-#![warn(missing_copy_implementations)]
+#![warn(missing_copy_implementations, missing_docs, rust_2018_idioms)]
+#![forbid(elided_lifetimes_in_paths, unsafe_code)]
 
 
 use std::fmt::{self, Display};
@@ -50,7 +49,7 @@ use std::ops::Range;
 
 
 /// An XML node indention.
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Indent {
     /// Disable indention and new lines.
     None,
@@ -226,7 +225,7 @@ impl XmlWriter {
 
     /// Writes a formatted comment.
     #[inline(never)]
-    pub fn write_comment_fmt(&mut self, fmt: fmt::Arguments) {
+    pub fn write_comment_fmt(&mut self, fmt: fmt::Arguments<'_>) {
         if self.state == State::Attributes {
             self.write_open_element();
         }
@@ -325,7 +324,7 @@ impl XmlWriter {
     /// assert_eq!(w.end_document(), "<rect fill=\"url(#gradient)\"/>\n");
     /// ```
     #[inline(never)]
-    pub fn write_attribute_fmt(&mut self, name: &str, fmt: fmt::Arguments) {
+    pub fn write_attribute_fmt(&mut self, name: &str, fmt: fmt::Arguments<'_>) {
         if self.state != State::Attributes {
             panic!("must be called after start_element()");
         }
@@ -458,7 +457,7 @@ impl XmlWriter {
     /// # Panics
     ///
     /// - When called not after `start_element()`.
-    pub fn write_text_fmt(&mut self, fmt: fmt::Arguments) {
+    pub fn write_text_fmt(&mut self, fmt: fmt::Arguments<'_>) {
         self.write_text_fmt_impl(fmt, false);
     }
 
@@ -476,7 +475,7 @@ impl XmlWriter {
     }
 
     #[inline(never)]
-    fn write_text_fmt_impl(&mut self, fmt: fmt::Arguments, cdata: bool) {
+    fn write_text_fmt_impl(&mut self, fmt: fmt::Arguments<'_>, cdata: bool) {
         if self.state == State::Empty || self.depth_stack.is_empty() {
             panic!("must be called after start_element()");
         }
