@@ -1,13 +1,14 @@
 use std::str;
-use xmlwriter::{XmlWriter, Options};
+use xmlwriter::{Options, XmlWriter};
 
 #[derive(Clone, Copy, PartialEq)]
 struct TStr<'a>(pub &'a str);
 
 macro_rules! text_eq {
-    ($result:expr, $expected:expr) => { assert_eq!($result, $expected) };
+    ($result:expr, $expected:expr) => {
+        assert_eq!($result, $expected)
+    };
 }
-
 
 #[test]
 fn write_element_01() {
@@ -24,11 +25,13 @@ fn write_element_02() {
     w.start_element("rect");
     w.end_element();
     w.end_element();
-    text_eq!(w.end_document(),
-"<svg>
+    text_eq!(
+        w.end_document(),
+        "<svg>
     <rect/>
 </svg>
-");
+"
+    );
 }
 
 #[test]
@@ -57,8 +60,9 @@ fn write_element_06() {
     w.start_element("rect");
     w.start_element("rect");
     w.start_element("rect");
-    text_eq!(w.end_document(),
-"<svg>
+    text_eq!(
+        w.end_document(),
+        "<svg>
     <rect>
         <rect>
             <rect>
@@ -69,7 +73,8 @@ fn write_element_06() {
         </rect>
     </rect>
 </svg>
-");
+"
+    );
 }
 
 #[test]
@@ -102,7 +107,7 @@ fn write_attribute_03() {
 fn write_attribute_04() {
     let opt = Options {
         use_single_quote: true,
-        .. Options::default()
+        ..Options::default()
     };
 
     let mut w = XmlWriter::new(opt);
@@ -116,21 +121,24 @@ fn write_attribute_04() {
 fn write_attribute_05() {
     let opt = Options {
         use_single_quote: true,
-        .. Options::default()
+        ..Options::default()
     };
 
     let mut w = XmlWriter::new(opt);
     w.start_element("svg");
     w.write_attribute("id", "'''''");
     w.end_element();
-    text_eq!(w.end_document(), "<svg id='&apos;&apos;&apos;&apos;&apos;'/>\n");
+    text_eq!(
+        w.end_document(),
+        "<svg id='&apos;&apos;&apos;&apos;&apos;'/>\n"
+    );
 }
 
 #[test]
 fn write_attribute_06() {
     let opt = Options {
         use_single_quote: true,
-        .. Options::default()
+        ..Options::default()
     };
 
     let mut w = XmlWriter::new(opt);
@@ -154,8 +162,10 @@ fn write_attribute_07() {
 fn write_declaration_01() {
     let mut w = XmlWriter::new(Options::default());
     w.write_declaration();
-    text_eq!(w.end_document(),
-             "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
+    text_eq!(
+        w.end_document(),
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+    );
 }
 
 #[test]
@@ -163,7 +173,7 @@ fn write_declaration_01() {
 fn write_declaration_02() {
     let mut w = XmlWriter::new(Options::default());
     w.write_declaration();
-    w.write_declaration();  // declaration must be written once
+    w.write_declaration(); // declaration must be written once
 }
 
 #[test]
@@ -178,19 +188,22 @@ fn write_declaration_03() {
 fn write_single_quote_01() {
     let opt = Options {
         use_single_quote: true,
-        .. Options::default()
+        ..Options::default()
     };
 
     let mut w = XmlWriter::new(opt);
     w.write_declaration();
-    text_eq!(w.end_document(), "<?xml version='1.0' encoding='UTF-8' standalone='no'?>\n");
+    text_eq!(
+        w.end_document(),
+        "<?xml version='1.0' encoding='UTF-8' standalone='no'?>\n"
+    );
 }
 
 #[test]
 fn write_single_quote_02() {
     let opt = Options {
         use_single_quote: true,
-        .. Options::default()
+        ..Options::default()
     };
 
     let mut w = XmlWriter::new(opt);
@@ -205,10 +218,12 @@ fn write_comment_01() {
     let mut w = XmlWriter::new(Options::default());
     w.write_comment("test");
     w.start_element("svg");
-    text_eq!(w.end_document(),
-"<!--test-->
+    text_eq!(
+        w.end_document(),
+        "<!--test-->
 <svg/>
-");
+"
+    );
 }
 
 #[test]
@@ -216,11 +231,13 @@ fn write_comment_02() {
     let mut w = XmlWriter::new(Options::default());
     w.start_element("svg");
     w.write_comment("test");
-    text_eq!(w.end_document(),
-"<svg>
+    text_eq!(
+        w.end_document(),
+        "<svg>
     <!--test-->
 </svg>
-");
+"
+    );
 }
 
 #[test]
@@ -229,12 +246,14 @@ fn write_comment_03() {
     w.write_comment("test");
     w.start_element("svg");
     w.write_comment("test");
-    text_eq!(w.end_document(),
-"<!--test-->
+    text_eq!(
+        w.end_document(),
+        "<!--test-->
 <svg>
     <!--test-->
 </svg>
-");
+"
+    );
 }
 
 #[test]
@@ -244,14 +263,16 @@ fn write_comment_04() {
     w.start_element("svg");
     w.start_element("rect");
     w.write_comment("test");
-    text_eq!(w.end_document(),
-"<!--test-->
+    text_eq!(
+        w.end_document(),
+        "<!--test-->
 <svg>
     <rect>
         <!--test-->
     </rect>
 </svg>
-");
+"
+    );
 }
 
 #[test]
@@ -262,13 +283,15 @@ fn write_comment_05() {
     w.write_comment("test");
     w.start_element("rect");
     w.end_element();
-    text_eq!(w.end_document(),
-"<!--test-->
+    text_eq!(
+        w.end_document(),
+        "<!--test-->
 <svg>
     <!--test-->
     <rect/>
 </svg>
-");
+"
+    );
 }
 
 #[test]
@@ -279,13 +302,15 @@ fn write_comment_06() {
     w.start_element("rect");
     w.end_element();
     w.write_comment("test");
-    text_eq!(w.end_document(),
-"<!--test-->
+    text_eq!(
+        w.end_document(),
+        "<!--test-->
 <svg>
     <rect/>
     <!--test-->
 </svg>
-");
+"
+    );
 }
 
 #[test]
@@ -294,10 +319,12 @@ fn write_comment_07() {
     w.start_element("svg");
     w.end_element();
     w.write_comment("test");
-    text_eq!(w.end_document(),
-"<svg/>
+    text_eq!(
+        w.end_document(),
+        "<svg/>
 <!--test-->
-");
+"
+    );
 }
 
 #[test]
@@ -306,11 +333,13 @@ fn write_comment_08() {
     w.write_comment("test");
     w.write_comment("test");
     w.write_comment("test");
-    text_eq!(w.end_document(),
-"<!--test-->
+    text_eq!(
+        w.end_document(),
+        "<!--test-->
 <!--test-->
 <!--test-->
-");
+"
+    );
 }
 
 #[test]
@@ -342,12 +371,14 @@ fn write_text_04() {
     w.start_element("p");
     w.write_text("text");
     w.write_text("text");
-    text_eq!(w.end_document(),
-"<p>
+    text_eq!(
+        w.end_document(),
+        "<p>
     text
     text
 </p>
-");
+"
+    );
 }
 
 #[test]
@@ -355,11 +386,13 @@ fn write_text_05() {
     let mut w = XmlWriter::new(Options::default());
     w.start_element("p");
     w.write_text("text");
-    text_eq!(w.end_document(),
-"<p>
+    text_eq!(
+        w.end_document(),
+        "<p>
     text
 </p>
-");
+"
+    );
 }
 
 #[test]
@@ -369,14 +402,16 @@ fn write_text_06() {
     w.write_text("text");
     w.start_element("p");
     w.write_text("text");
-    text_eq!(w.end_document(),
-"<p>
+    text_eq!(
+        w.end_document(),
+        "<p>
     text
     <p>
         text
     </p>
 </p>
-");
+"
+    );
 }
 
 #[test]
@@ -387,8 +422,9 @@ fn write_text_07() {
     w.write_text("text");
     w.start_element("p");
     w.write_text("text");
-    text_eq!(w.end_document(),
-"<div>
+    text_eq!(
+        w.end_document(),
+        "<div>
     <p>
         text
         <p>
@@ -396,7 +432,8 @@ fn write_text_07() {
         </p>
     </p>
 </div>
-");
+"
+    );
 }
 
 #[test]
@@ -404,11 +441,13 @@ fn write_text_08() {
     let mut w = XmlWriter::new(Options::default());
     w.start_element("p");
     w.write_text("<");
-    text_eq!(w.end_document(),
-"<p>
+    text_eq!(
+        w.end_document(),
+        "<p>
     &lt;
 </p>
-");
+"
+    );
 }
 
 #[test]
@@ -416,11 +455,13 @@ fn write_text_09() {
     let mut w = XmlWriter::new(Options::default());
     w.start_element("p");
     w.write_text("<&>");
-    text_eq!(w.end_document(),
-"<p>
+    text_eq!(
+        w.end_document(),
+        "<p>
     &lt;&>
 </p>
-");
+"
+    );
 }
 
 #[test]
@@ -428,11 +469,13 @@ fn write_text_10() {
     let mut w = XmlWriter::new(Options::default());
     w.start_element("p");
     w.write_text("&lt;");
-    text_eq!(w.end_document(),
-"<p>
+    text_eq!(
+        w.end_document(),
+        "<p>
     &lt;
 </p>
-");
+"
+    );
 }
 
 #[test]
@@ -443,13 +486,15 @@ fn write_text_11() {
     w.start_element("p");
     w.end_element();
     w.write_text("text");
-    text_eq!(w.end_document(),
-"<p>
+    text_eq!(
+        w.end_document(),
+        "<p>
     text
     <p/>
     text
 </p>
-");
+"
+    );
 }
 
 #[test]
@@ -457,11 +502,13 @@ fn write_text_cdata() {
     let mut w = XmlWriter::new(Options::default());
     w.start_element("script");
     w.write_cdata_text("function cmp(a,b) { return (a<b)?-1:(a>b)?1:0; }");
-    text_eq!(w.end_document(),
-"<script><![CDATA[
+    text_eq!(
+        w.end_document(),
+        "<script><![CDATA[
     function cmp(a,b) { return (a<b)?-1:(a>b)?1:0; }
 ]]></script>
-");
+"
+    );
 }
 
 #[test]
@@ -473,8 +520,7 @@ fn write_preserve_text_01() {
     w.start_element("p");
     w.end_element();
     w.write_text("text");
-    text_eq!(w.end_document(),
-"<p>text<p/>text</p>");
+    text_eq!(w.end_document(), "<p>text<p/>text</p>");
 }
 
 #[test]
@@ -489,18 +535,20 @@ fn write_preserve_text_02() {
     w.write_text("text");
     w.end_element();
     w.set_preserve_whitespaces(false);
-    text_eq!(w.end_document(),
-"<p>
+    text_eq!(
+        w.end_document(),
+        "<p>
     <p>text<p/>text</p>
 </p>
-");
+"
+    );
 }
 
 #[test]
 fn attrs_indent_01() {
     let opt = Options {
         attributes_indent: xmlwriter::Indent::Spaces(2),
-        .. Options::default()
+        ..Options::default()
     };
 
     let mut w = XmlWriter::new(opt);
@@ -509,12 +557,14 @@ fn attrs_indent_01() {
     w.start_element("rect");
     w.write_attribute("x", "10");
     w.write_attribute("y", "15");
-    text_eq!(w.end_document(),
-"<rect
+    text_eq!(
+        w.end_document(),
+        "<rect
   x=\"5\">
     <rect
       x=\"10\"
       y=\"15\"/>
 </rect>
-");
+"
+    );
 }

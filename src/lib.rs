@@ -38,15 +38,12 @@ assert_eq!(w.end_document(),
 */
 
 #![doc(html_root_url = "https://docs.rs/xmlwriter/0.1.0")]
-
 #![warn(missing_copy_implementations, missing_docs, rust_2018_idioms)]
 #![forbid(elided_lifetimes_in_paths, unsafe_code)]
-
 
 use std::fmt::{self, Display};
 use std::io::Write;
 use std::ops::Range;
-
 
 /// An XML node indention.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -142,13 +139,12 @@ impl Default for Options {
     }
 }
 
-
 #[derive(Clone, Copy, PartialEq, Debug)]
 enum State {
     Empty,
     Document,
     Attributes,
-    CData
+    CData,
 }
 
 #[derive(Clone, Debug)]
@@ -156,7 +152,6 @@ struct DepthData {
     range: Range<usize>,
     has_children: bool,
 }
-
 
 /// An XML writer.
 #[derive(Clone, Debug)]
@@ -360,7 +355,8 @@ impl XmlWriter {
     /// ```
     #[inline(never)]
     pub fn write_attribute_raw<F>(&mut self, name: &str, f: F)
-        where F: FnOnce(&mut Vec<u8>)
+    where
+        F: FnOnce(&mut Vec<u8>),
     {
         if self.state != State::Attributes {
             panic!("must be called after start_element()");
@@ -399,11 +395,19 @@ impl XmlWriter {
     /// - ' -> &apos;
     #[inline(never)]
     fn escape_attribute_value(&mut self, mut start: usize) {
-        let quote = if self.opt.use_single_quote { b'\'' } else { b'"' };
+        let quote = if self.opt.use_single_quote {
+            b'\''
+        } else {
+            b'"'
+        };
         while let Some(idx) = self.buf[start..].iter().position(|c| *c == quote) {
             let i = start + idx;
-            let s = if self.opt.use_single_quote { b"&apos;" } else { b"&quot;" };
-            self.buf.splice(i..i+1, s.iter().cloned());
+            let s = if self.opt.use_single_quote {
+                b"&apos;"
+            } else {
+                b"&quot;"
+            };
+            self.buf.splice(i..i + 1, s.iter().cloned());
             start = i + 6;
         }
     }
@@ -462,9 +466,9 @@ impl XmlWriter {
     }
 
     /// Writes text inside a `<![CDATA[ ... ]]>` node.
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// - When called not after `start_element()`.
     /// - When the text contains the literal `]]>`.
     pub fn write_cdata_text(&mut self, text: &str) {
@@ -513,7 +517,7 @@ impl XmlWriter {
     fn escape_text(&mut self, mut start: usize) {
         while let Some(idx) = self.buf[start..].iter().position(|c| *c == b'<') {
             let i = start + idx;
-            self.buf.splice(i..i+1, b"&lt;".iter().cloned());
+            self.buf.splice(i..i + 1, b"&lt;".iter().cloned());
             start = i + 4;
         }
     }
@@ -590,7 +594,11 @@ impl XmlWriter {
 
     #[inline]
     fn get_quote_char(&self) -> u8 {
-        if self.opt.use_single_quote { b'\'' } else { b'"' }
+        if self.opt.use_single_quote {
+            b'\''
+        } else {
+            b'"'
+        }
     }
 
     #[inline]
