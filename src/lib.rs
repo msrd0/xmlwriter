@@ -583,6 +583,9 @@ impl XmlWriter {
     }
 
     pub fn write_raw_xml_unchecked(&mut self, xml: &str) {
+        if self.state == State::Attributes {
+            self.write_open_element();
+        }
         if !self.preserve_whitespaces {
             if self.state != State::Empty {
                 self.write_new_line();
