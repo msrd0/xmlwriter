@@ -582,6 +582,17 @@ impl XmlWriter {
         String::from_utf8(self.buf).unwrap()
     }
 
+    pub fn write_raw_xml_unchecked(&mut self, xml: &str) {
+        if !self.preserve_whitespaces {
+            if self.state != State::Empty {
+                self.write_new_line();
+            }
+            self.write_node_indent();
+        }
+
+        self.push_str(xml);
+    }
+
     #[inline]
     fn push_byte(&mut self, c: u8) {
         self.buf.push(c);

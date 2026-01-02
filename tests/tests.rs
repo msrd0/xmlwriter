@@ -512,6 +512,33 @@ fn write_text_cdata() {
 }
 
 #[test]
+fn write_raw_xml() {
+    let mut w = XmlWriter::new(Options::default());
+    w.start_element("body");
+    w.start_element("p");
+    w.set_preserve_whitespaces(true);
+    w.write_text("abc");
+    w.end_element();
+    w.set_preserve_whitespaces(false);
+    w.write_raw_xml_unchecked("<p>def</p>");
+    w.start_element("p");
+    w.set_preserve_whitespaces(true);
+    w.write_text("ghi");
+    w.end_element();
+    w.set_preserve_whitespaces(false);
+    w.end_element();
+    text_eq!(
+        w.end_document(),
+        "<body>
+    <p>abc</p>
+    <p>def</p>
+    <p>ghi</p>
+</body>
+"
+    );
+}
+
+#[test]
 fn write_preserve_text_01() {
     let mut w = XmlWriter::new(Options::default());
     w.set_preserve_whitespaces(true);
