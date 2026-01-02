@@ -1,3 +1,5 @@
+[workspace]
+
 [package]
 name = "xmlwriter"
 version = "0.1.0"
